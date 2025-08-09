@@ -1,0 +1,67 @@
+/* src/style.css */
+
+@import "tailwindcss";
+
+/* Custom scrollbar for better UX on weather/news/research pages */
+.custom-scrollbar::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Light gray track */
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888; /* Darker gray thumb */
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Even darker gray on hover */
+}
+
+/* For Firefox */
+.custom-scrollbar {
+    scrollbar-width: thin; /* "auto" or "thin" */
+    scrollbar-color: #888 #f0f0f0; /* thumb and track color */
+}
+
+/* Ensure html and body take full height and allow scrolling */
+html, body {
+  height: 100%; /* Make html and body take full viewport height */
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrollbar */
+  /* Ensure no 'overflow: hidden;' or fixed heights are applied here from other rules */
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure #root takes at least full viewport height */
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure app-container takes at least full viewport height */
+}
+
+.app-main-content {
+  flex-grow: 1; /* Allows main content to take up available space */
+  /* This padding is crucial to prevent content from being hidden under the sticky header.
+     Adjust this value if your header's height changes. You can inspect the header's
+     computed height in browser developer tools. */
+  padding-top: 100px; /* A safe starting value; adjust as needed */
+  box-sizing: border-box; /* Include padding in the element's total width and height */
+}
+
+/* Global typography and body styles */
+body {
+  font-family: 'Inter', sans-serif; /* Or any other font you prefer */
+  line-height: 1.6; /* Ensure good line spacing */
+  color: #333; /* Default text color */
+  background-color: #f4f4f4; /* Default background color */
+}

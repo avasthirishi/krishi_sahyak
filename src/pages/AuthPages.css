@@ -1,0 +1,135 @@
+src/pages/AuthPages.css
+
+.auth-container {
+    max-width: 500px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Inter', sans-serif;
+}
+
+.auth-container h2 {
+    font-size: 2.2rem;
+    color: #4CAF50; /* Green */
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+.auth-container p {
+    text-align: center;
+    color: #555;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.auth-form .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.auth-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"],
+.auth-form select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Ensures padding doesn't add to width */
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.auth-form input[type="text"]:focus,
+.auth-form input[type="email"]:focus,
+.auth-form input[type="password"]:focus,
+.auth-form select:focus {
+    border-color: #4CAF50;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.auth-form .form-radio {
+    margin-right: 0.5rem;
+    accent-color: #4CAF50; /* For modern browsers */
+}
+
+/* Ensure radio buttons stack vertically on small screens if needed */
+.auth-form .flex.flex-col.sm\\:flex-row.sm\\:gap-4 {
+    flex-direction: column; /* Default to column */
+    gap: 0.5rem; /* Smaller gap for stacked items */
+}
+
+@media (min-width: 640px) { /* Tailwind's 'sm' breakpoint */
+    .auth-form .flex.flex-col.sm\\:flex-row.sm\\:gap-4 {
+        flex-direction: row; /* Revert to row on small-medium screens */
+        gap: 1rem; /* Adjust gap for row layout */
+    }
+}
+
+
+.auth-button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 1.5rem;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.auth-button:hover {
+    background-color: #45a049; /* Darker green on hover */
+    transform: translateY(-1px);
+}
+
+.auth-button:active {
+    transform: translateY(0);
+}
+
+.auth-message {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+    color: #007bff; /* Blue for status messages */
+    background-color: #e7f3ff;
+    padding: 0.8rem;
+    border-radius: 6px;
+    border: 1px solid #cce5ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .auth-container {
+        margin: 1rem auto;
+        padding: 1.5rem;
+    }
+
+    .auth-container h2 {
+        font-size: 1.8rem;
+    }
+
+    .auth-form .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .auth-button {
+        padding: 0.7rem 1.2rem;
+        font-size: 1rem;
+    }
+}
