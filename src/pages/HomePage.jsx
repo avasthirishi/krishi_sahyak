@@ -14,10 +14,10 @@ import indianSpices from '../assets/IndianSpices.png';
 import internshipIcon from '../assets/Internship_home_Icon.png';
 import researchLogo from '../assets/magazine_logo.png';
 import mandiIcon from '../assets/Mandi_icons.png';
-import organicFarming from '../assets/Organic_Farming.png';
-import soilTestingIcon from '../assets/Soil_Testing.png';
+import organicFarming from '../assets/organic_farming.png';
+import soilTestingIcon from '../assets/soil_testing.png';
 import trainingProgram from '../assets/traning_program.png';
-import weatherIcon from '../assets/Weather.png';
+import weatherIcon from '../assets/weather.png';
 import indianMillets from '../assets/Indian_Millets.png';
 import newsIcon from "../assets/latest_news.png";
 export default function HomePage() {
