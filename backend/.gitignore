@@ -1,5 +1,10 @@
 node_modules
-# Keep environment variables out of version control
 .env
-
 /generated/prisma
+
+# AI IDE helper folders (not project code)
+.agents/
+.claude/
+.windsurf/
+.vite/
+test-prisma.js
