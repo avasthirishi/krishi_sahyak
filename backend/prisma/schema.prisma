@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ========================================
+// USER AUTHENTICATION & AUTHORIZATION
+// ========================================
+
+enum Role {
+  SUPER_ADMIN
+  FARMER
+  MANDI_OWNER
+  RESEARCHER
+  LAB_OWNER
+  CONTENT_MANAGER
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  role          Role      @default(FARMER)
+  isVerified    Boolean   @default(false) @map("is_verified")
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  
+  profile       Profile?
+  crops         Crop[]
+  newsArticles  NewsArticle[]
+  resources     AgriculturalResource[]
+  
+  @@map("users")
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  fullName  String?  @map("full_name")
+  phone     String?
+  avatarUrl String?  @map("avatar_url")
+  address   String?
+  city      String?
+  state     String?
+  pincode   String?
+  bio       String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("profiles")
+}
+
+// ========================================
+// CROP MANAGEMENT
+// ========================================
+
+model Crop {
+  id                    String   @id @default(uuid())
+  name                  String
+  scientificName        String?  @map("scientific_name")
+  briefDescription      String?  @map("brief_description") @db.Text
+  fullDescription       String?  @map("full_description") @db.Text
+  imageUrl              String?  @map("image_url")
+  climate               String?
+  soil                  String?
+  sowingTime            String?  @map("sowing_time")
+  harvestingTime        String?  @map("harvesting_time")
+  waterRequirements     String?  @map("water_requirements") @db.Text
+  commonPests           String[] @map("common_pests")
+  commonDiseases        String[] @map("common_diseases")
+  yield                 String?
+  cultivationPractices  String[] @map("cultivation_practices")
+  fertilizerManagement  String?  @map("fertilizer_management") @db.Text
+  marketInfo            String?  @map("market_info") @db.Text
+  category              String?
+  status                String   @default("published")
+  views                 Int      @default(0)
+  createdById           String?  @map("created_by_id")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+  
+  createdBy             User?    @relation(fields: [createdById], references: [id])
+  
+  @@map("crops")
+}
+
+// ========================================
+// NEWS MANAGEMENT
+// ========================================
+
+model NewsArticle {
+  id            String    @id @default(uuid())
+  title         String
+  slug          String?   @unique
+  category      String?
+  headline      String?   @db.Text
+  snippet       String?   @db.Text
+  fullContent   String?   @map("full_content") @db.Text
+  imageUrl      String?   @map("image_url")
+  source        String?
+  author        String?
+  publishedDate DateTime? @map("published_date")
+  externalUrl   String?   @map("external_url")
+  status        String    @default("published")
+  views         Int       @default(0)
+  likes         Int       @default(0)
+  createdById   String?   @map("created_by_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  
+  createdBy     User?     @relation(fields: [createdById], references: [id])
+  
+  @@map("news_articles")
+}
+
+// ========================================
+// AGRICULTURAL RESOURCE MANAGEMENT
+// ========================================
+
+model AgriculturalResource {
+  id          String   @id @default(uuid())
+  title       String
+  category    String
+  description String   @db.Text
+  fees        String?
+  duration    String?
+  imageUrl    String?  @map("image_url")
+  status      String   @default("published")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdById String?  @map("created_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  createdBy   User?    @relation(fields: [createdById], references: [id])
+
+  @@map("agricultural_resources")
+}

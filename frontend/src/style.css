@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --bg-cream: #f6f8f2;
+  --bg-surface: #ffffff;
+  --ink-strong: #1f2a1f;
+  --ink-soft: #4b5c4b;
+  --brand: #1f7a46;
+  --brand-dark: #155633;
+  --brand-mint: #d5f0dd;
+  --accent: #f5b700;
+  --card-shadow: 0 12px 30px rgba(25, 60, 35, 0.12);
+  --radius-lg: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--ink-strong);
+  background:
+    radial-gradient(1200px 600px at 10% -20%, rgba(31, 122, 70, 0.18), transparent 60%),
+    radial-gradient(1100px 550px at 100% 0%, rgba(245, 183, 0, 0.16), transparent 52%),
+    linear-gradient(180deg, #f9fbf6 0%, var(--bg-cream) 55%, #edf3e7 100%);
+  line-height: 1.65;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+a {
+  color: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-shell {
+  flex: 1;
+}
+
+.glass-card {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.78));
+  border: 1px solid rgba(31, 122, 70, 0.16);
+  box-shadow: var(--card-shadow);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(4px);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #dce6d9;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #3f7f58;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #2a5f40;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #3f7f58 #dce6d9;
+}
+
+@media (max-width: 768px) {
+  body {
+    background:
+      radial-gradient(600px 360px at 10% -10%, rgba(31, 122, 70, 0.16), transparent 65%),
+      linear-gradient(180deg, #f9fbf6 0%, #edf3e7 100%);
+  }
+}

@@ -1,0 +1,29 @@
+# Frontend Dockerfile
+
+# Use Node.js LTS version
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy application code
+COPY . .
+
+# Expose Vite dev server port
+EXPOSE 5173
+
+# For development
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+# For production build (uncomment when deploying)
+# RUN npm run build
+# FROM nginx:alpine
+# COPY --from=0 /app/dist /usr/share/nginx/html
+# EXPOSE 80
+# CMD ["nginx", "-g", "daemon off;"]
