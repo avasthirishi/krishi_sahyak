@@ -175,8 +175,120 @@ async function seed() {
       console.log(`✅ Created crop: ${crop.name}`);
     }
 
+    // Step 4: Seed agricultural resources (courses & training)
+    console.log('\n📚 Seeding agricultural resources...');
+    const resources = [
+      {
+        title: 'Kisan Call Center Training Program',
+        category: 'Training',
+        description: 'Free telephonic advisory service by Government of India where farmers can call 1800-180-1551 to get guidance on farming practices, pest management, weather, and schemes.',
+        fees: 'Free',
+        duration: 'On-call (24x7)',
+        status: 'published',
+        sortOrder: 1
+      },
+      {
+        title: 'National Institute of Agricultural Extension Management (MANAGE)',
+        category: 'Course',
+        description: 'MANAGE offers various training programs and courses for agricultural extension workers, farmers, and agri-entrepreneurs covering modern farming techniques, agri-business management, and rural development.',
+        fees: 'Subsidized / Free for eligible candidates',
+        duration: '1 week – 3 months (varies by program)',
+        status: 'published',
+        sortOrder: 2
+      },
+      {
+        title: 'Pradhan Mantri Kaushal Vikas Yojana – Agriculture Skill Courses',
+        category: 'Skill Development',
+        description: 'Government skill development initiative offering certified short-term agriculture courses including organic farming, soil testing, drip irrigation, dairy management, and post-harvest handling.',
+        fees: 'Free (Government funded)',
+        duration: '1–3 months',
+        status: 'published',
+        sortOrder: 3
+      },
+      {
+        title: 'ICAR e-Learning Courses',
+        category: 'Online Course',
+        description: 'Indian Council of Agricultural Research (ICAR) provides free online courses on crop production, soil health, plant protection, animal husbandry, and fisheries through its e-Krishi Shiksha platform.',
+        fees: 'Free',
+        duration: 'Self-paced (2–8 weeks)',
+        status: 'published',
+        sortOrder: 4
+      },
+      {
+        title: 'Organic Farming Certification Program',
+        category: 'Certification',
+        description: 'Comprehensive training on organic farming methods including composting, natural pest control, bio-fertilizers, and certification process under NPOP (National Programme for Organic Production).',
+        fees: '₹2,000 – ₹5,000',
+        duration: '3–6 months',
+        status: 'published',
+        sortOrder: 5
+      },
+      {
+        title: 'Drip & Sprinkler Irrigation Training',
+        category: 'Training',
+        description: 'Hands-on training program on micro-irrigation techniques including drip and sprinkler systems, installation, maintenance, and water-use efficiency under Pradhan Mantri Krishi Sinchayee Yojana (PMKSY).',
+        fees: 'Free / Subsidized',
+        duration: '3–7 days',
+        status: 'published',
+        sortOrder: 6
+      },
+      {
+        title: 'Soil Health Management Training',
+        category: 'Training',
+        description: 'Training on soil testing techniques, interpreting soil health cards, balanced fertilizer use, and improving soil fertility for better crop yields. Available through Krishi Vigyan Kendras (KVKs) across India.',
+        fees: 'Free',
+        duration: '1–5 days',
+        status: 'published',
+        sortOrder: 7
+      },
+      {
+        title: 'Post-Harvest Technology & Value Addition',
+        category: 'Course',
+        description: 'Practical training on post-harvest handling, storage, processing, and value addition for fruits, vegetables, and grains to reduce losses and increase farmer income.',
+        fees: '₹500 – ₹3,000',
+        duration: '1–2 weeks',
+        status: 'published',
+        sortOrder: 8
+      },
+      {
+        title: 'Agri-Entrepreneurship Development Program',
+        category: 'Entrepreneurship',
+        description: 'Training for young farmers and agri-entrepreneurs on setting up agri-based businesses, accessing finance, marketing, farm mechanization, and food processing units under RKVY-RAFAAR scheme.',
+        fees: 'Free / Nominal',
+        duration: '2 months',
+        status: 'published',
+        sortOrder: 9
+      },
+      {
+        title: 'Integrated Pest Management (IPM) Training',
+        category: 'Training',
+        description: 'Training on eco-friendly pest management strategies including biological control, cultural practices, and judicious use of pesticides to reduce chemical dependency and crop losses.',
+        fees: 'Free',
+        duration: '3–10 days',
+        status: 'published',
+        sortOrder: 10
+      }
+    ];
+
+    let resourceCount = 0;
+    for (const resource of resources) {
+      const existing = await prisma.agriculturalResource.findFirst({
+        where: { title: resource.title }
+      });
+      if (existing) {
+        console.log(`⏭️  Skipping resource: ${resource.title} (already exists)`);
+        continue;
+      }
+      await prisma.agriculturalResource.create({
+        data: { ...resource, createdById: adminUser.id }
+      });
+      resourceCount++;
+      console.log(`✅ Created resource: ${resource.title}`);
+    }
+
     console.log(`\n🎉 Seeding completed!`);
     console.log(`   ${createdCount} crops created`);
+    console.log(`   ${resourceCount} resources created`);
     console.log(`\n🔑 Test Credentials:`);
     console.log(`   Admin: admin@krishisahyak.com / admin123`);
     console.log(`   Manager: manager@krishisahyak.com / manager123\n`);

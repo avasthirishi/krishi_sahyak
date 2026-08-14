@@ -78,12 +78,13 @@ const Header = () => {
 
   // Items for the Services dropdown
   const servicesItems = [
-    { to: "/research", label: "Research" },
-    { to: "/resources", label: "Resources" },
-    { to: "/weather", label: "Weather" },
-    { to: "/crops", label: "Crops" },
-    {to:"/mandilist", label: "mandiList"},
-    {to:"/innovative-ideas", label :"innovative ideas",}
+    { to: '/research',      label: 'Research'         },
+    { to: '/resources',     label: 'Resources'        },
+    { to: '/weather',       label: 'Weather'          },
+    { to: '/crops',         label: 'Crops'            },
+    { to: '/crop-calendar', label: 'Crop Calendar'    },
+    { to: '/mandilist',     label: 'Mandi List'       },
+    { to: '/innovative-ideas', label: 'Innovative Ideas' },
   ];
 
   const Logo = (
@@ -205,6 +206,10 @@ const Header = () => {
           {/* Moved About Us here */}
           <Link to="/about" className={`py-2 px-1 hover:text-yellow-300 ${location.pathname === "/about" ? "text-yellow-400 font-bold" : ""}`}>About Us</Link>
           <Link to="/contact" className={`py-2 px-1 hover:text-yellow-300 ${location.pathname === "/contact" ? "text-yellow-400 font-bold" : ""}`}>Contact Us</Link>
+          <Link to="/community" className={`py-2 px-1 hover:text-yellow-300 ${location.pathname === "/community" ? "text-yellow-400 font-bold" : ""}`}>Community</Link>
+          {user?.role === 'SUPER_ADMIN' && (
+            <Link to="/admin" className="py-1.5 px-3 bg-yellow-500 text-green-900 rounded-lg font-bold text-sm hover:bg-yellow-400 transition-colors">⚙ Admin</Link>
+          )}
         </nav>
       </div>
 
@@ -241,7 +246,10 @@ const Header = () => {
           </React.Fragment>
 
           <Link to="/business-ideas" className="block py-2 px-4 hover:text-yellow-300 transition-colors" onClick={handleLinkClick}>Business Ideas</Link>
-          {/* Moved About Us here for mobile */}
+          <Link to="/community" className="block py-2 px-4 hover:text-yellow-300 transition-colors" onClick={handleLinkClick}>Community</Link>
+          {user?.role === 'SUPER_ADMIN' && (
+            <Link to="/admin" className="block py-2 px-6 bg-yellow-500 text-green-900 rounded-lg font-bold hover:bg-yellow-400 transition-colors" onClick={handleLinkClick}>⚙ Admin Panel</Link>
+          )}
           <Link to="/about" className="block py-2 px-4 hover:text-yellow-300 transition-colors" onClick={handleLinkClick}>About Us</Link>
           <Link to="/contact" className="block py-2 px-4 hover:text-yellow-300 transition-colors" onClick={handleLinkClick}>Contact Us</Link>
 

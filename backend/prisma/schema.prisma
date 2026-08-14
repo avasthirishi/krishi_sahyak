@@ -27,35 +27,55 @@ model User {
   email         String    @unique
   passwordHash  String    @map("password_hash")
   role          Role      @default(FARMER)
+  roleId        Int       @default(1) @map("role_id")
   isVerified    Boolean   @default(false) @map("is_verified")
   isActive      Boolean   @default(true) @map("is_active")
+  isApproved    Boolean   @default(false) @map("is_approved")
+  lastActiveAt  DateTime? @map("last_active_at")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
-  
-  profile       Profile?
-  crops         Crop[]
-  newsArticles  NewsArticle[]
-  resources     AgriculturalResource[]
-  
+
+  profile            Profile?
+  crops              Crop[]
+  newsArticles       NewsArticle[]
+  resources          AgriculturalResource[]
+  researchPapers     ResearchPaper[]
+  notices            Notice[]
+  events             GovernmentEvent[]
+  weatherAlerts      WeatherAlert[]
+  mandiEntries       MandiEntry[]
+  communityPosts     CommunityPost[]
+  communityComments  CommunityComment[]
+
   @@map("users")
 }
 
 model Profile {
-  id        String   @id @default(uuid())
-  userId    String   @unique @map("user_id")
-  fullName  String?  @map("full_name")
-  phone     String?
-  avatarUrl String?  @map("avatar_url")
-  address   String?
-  city      String?
-  state     String?
-  pincode   String?
-  bio       String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  
+  id              String   @id @default(uuid())
+  userId          String   @unique @map("user_id")
+  fullName        String?  @map("full_name")
+  phone           String?
+  avatarUrl       String?  @map("avatar_url")
+  address         String?
+  city            String?
+  state           String?
+  pincode         String?
+  bio             String?
+  // Role-specific extra fields
+  institution     String?  // for RESEARCHER
+  specialization  String?  // for RESEARCHER
+  mandiName       String?  @map("mandi_name")   // for MANDI_OWNER
+  mandiLocation   String?  @map("mandi_location") // for MANDI_OWNER
+  labName         String?  @map("lab_name")     // for LAB_OWNER
+  licenseNo       String?  @map("license_no")   // for LAB_OWNER
+  village         String?  // for FARMER
+  district        String?  // for FARMER
+  landHolding     String?  @map("land_holding") // for FARMER (acres)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@map("profiles")
 }
 
@@ -143,4 +163,176 @@ model AgriculturalResource {
   createdBy   User?    @relation(fields: [createdById], references: [id])
 
   @@map("agricultural_resources")
+}
+
+// ========================================
+// SOIL QUERY / RESEARCHER SUGGESTIONS
+// ========================================
+
+model SoilQuery {
+  id                 String   @id @default(uuid())
+  name               String
+  email              String
+  phone              String
+  landSize           Float?   @map("land_size")
+  soilType           String   @map("soil_type")
+  currentCrops       String?  @map("current_crops")
+  queryType          String   @map("query_type")
+  problemDescription String   @map("problem_description") @db.Text
+  status             String   @default("pending")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@map("soil_queries")
+}
+
+// ========================================
+// RESEARCH PAPERS
+// ========================================
+
+model ResearchPaper {
+  id           String    @id @default(uuid())
+  title        String
+  abstract     String    @db.Text
+  authors      String
+  journal      String?
+  publishedAt  DateTime? @map("published_at")
+  pdfUrl       String?   @map("pdf_url")
+  tags         String[]
+  status       String    @default("published")
+  createdById  String?   @map("created_by_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  createdBy    User?     @relation(fields: [createdById], references: [id])
+
+  @@map("research_papers")
+}
+
+// ========================================
+// NOTICES
+// ========================================
+
+model Notice {
+  id           String    @id @default(uuid())
+  title        String
+  content      String    @db.Text
+  category     String    @default("general")
+  priority     String    @default("normal")
+  expiresAt    DateTime? @map("expires_at")
+  status       String    @default("active")
+  createdById  String?   @map("created_by_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  createdBy    User?     @relation(fields: [createdById], references: [id])
+
+  @@map("notices")
+}
+
+// ========================================
+// GOVERNMENT EVENTS
+// ========================================
+
+model GovernmentEvent {
+  id               String   @id @default(uuid())
+  title            String
+  description      String   @db.Text
+  eventDate        DateTime @map("event_date")
+  location         String?
+  category         String   @default("general")
+  organizer        String?
+  imageUrl         String?  @map("image_url")
+  registrationUrl  String?  @map("registration_url")
+  status           String   @default("upcoming")
+  createdById      String?  @map("created_by_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  createdBy        User?    @relation(fields: [createdById], references: [id])
+
+  @@map("government_events")
+}
+
+// ========================================
+// WEATHER ALERTS
+// ========================================
+
+model WeatherAlert {
+  id           String   @id @default(uuid())
+  title        String
+  message      String   @db.Text
+  severity     String   @default("info")
+  region       String?
+  validFrom    DateTime @map("valid_from")
+  validUntil   DateTime @map("valid_until")
+  createdById  String?  @map("created_by_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  createdBy    User?    @relation(fields: [createdById], references: [id])
+
+  @@map("weather_alerts")
+}
+
+// ========================================
+// MANDI PRICE ENTRIES
+// ========================================
+
+model MandiEntry {
+  id           String   @id @default(uuid())
+  mandiName    String   @map("mandi_name")
+  state        String
+  district     String?
+  commodity    String
+  variety      String?
+  minPrice     Float    @map("min_price")
+  maxPrice     Float    @map("max_price")
+  modalPrice   Float    @map("modal_price")
+  unit         String   @default("Quintal")
+  reportDate   DateTime @map("report_date")
+  createdById  String?  @map("created_by_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  createdBy    User?    @relation(fields: [createdById], references: [id])
+
+  @@map("mandi_entries")
+}
+
+// ========================================
+// COMMUNITY PLATFORM
+// ========================================
+
+model CommunityPost {
+  id          String   @id @default(uuid())
+  authorId    String   @map("author_id")
+  title       String?
+  content     String   @db.Text
+  category    String   @default("general")
+  tags        String[]
+  imageUrl    String?  @map("image_url")
+  likesCount  Int      @default(0) @map("likes_count")
+  status      String   @default("active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  author      User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments    CommunityComment[]
+
+  @@map("community_posts")
+}
+
+model CommunityComment {
+  id        String   @id @default(uuid())
+  postId    String   @map("post_id")
+  authorId  String   @map("author_id")
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@map("community_comments")
 }

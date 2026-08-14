@@ -21,6 +21,9 @@ import InnovativeIdeas from "./pages/InnovativeIdeas.jsx";
 import Footer from './components/Footer.jsx';
 import MandiListPage from './pages/mandiListPage.jsx';
 import SoilTestingForm from './pages/SoilTestingPage.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx';
+import CommunityPage from './pages/CommunityPage.jsx';
+import CropCalendarPage from './pages/CropCalendarPage.jsx';
 
 function App() {
   return (
@@ -44,6 +47,9 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/community" element={<CommunityPage />} />
+          <Route path="/crop-calendar" element={<CropCalendarPage />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<h1 className="text-center text-2xl font-bold py-24">404: Page Not Found</h1>} />
           <Route path="/footer" element={<Footer />} />
         </Routes>

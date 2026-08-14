@@ -10,6 +10,9 @@ import { isEmailServiceConfigured } from './utils/emailService.js';
 import authRoutes from './routes/authRoutes.js';
 import cropRoutes from './routes/cropRoutes.js';
 import resourceRoutes from './routes/resourceRoutes.js';
+import soilQueryRoutes from './routes/soilQueryRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import communityRoutes from './routes/communityRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -74,6 +77,9 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/crops', cropRoutes);
 app.use('/api/resources', resourceRoutes);
+app.use('/api/soil-queries', soilQueryRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/community', communityRoutes);
 
 // 404 handler
 app.use((req, res) => {

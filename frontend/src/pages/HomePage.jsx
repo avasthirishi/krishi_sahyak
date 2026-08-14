@@ -1,6 +1,6 @@
 // src/pages/HomePage.jsx
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import kishanSahayakLogo from '../assets/kishan_sahayak_logo.png';
 import magazineLogo from '../assets/magazine_logo.png';
 import eventLogo from '../assets/event_logo.png';
@@ -199,6 +199,15 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* --- Mandi Price Ticker --- */}
+      <div className="bg-green-800 text-white py-2 text-sm overflow-hidden">
+        <div className="ticker-bar">
+          <div className="ticker-inner px-4 whitespace-nowrap">
+            🌾 Wheat: ₹2,150/Q &nbsp;|&nbsp; 🍚 Rice: ₹3,200/Q &nbsp;|&nbsp; 🌽 Maize: ₹1,820/Q &nbsp;|&nbsp; 🥜 Groundnut: ₹5,400/Q &nbsp;|&nbsp; 🫘 Soybean: ₹4,200/Q &nbsp;|&nbsp; 🧅 Onion: ₹1,800/Q &nbsp;|&nbsp; 🍅 Tomato: ₹2,600/Q &nbsp;|&nbsp; 🥔 Potato: ₹1,400/Q &nbsp;|&nbsp; ☁️ Cotton: ₹6,800/Q &nbsp;|&nbsp; 🌼 Mustard: ₹5,200/Q &nbsp;|&nbsp; 🎋 Sugarcane: ₹350/Q &nbsp;|&nbsp; 🌾 Barley: ₹1,650/Q &nbsp;|&nbsp; 🫘 Chickpea: ₹5,100/Q &nbsp;|&nbsp; 🍋 Lemon: ₹3,500/Q
+          </div>
+        </div>
+      </div>
+
       {/* --- Feature Cards --- */}
       <section className="relative -mt-12 sm:-mt-20 z-40 px-2">
         <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-7 justify-around flex-wrap">
@@ -221,6 +230,41 @@ export default function HomePage() {
               <h4 className="mt-2 text-xs sm:text-sm md:text-base font-bold">{feature.title}</h4>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* --- Agri Quote + Crop Calendar CTA --- */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Daily Agri Quote */}
+          <div className="glass-card p-6 flex flex-col justify-between">
+            <p className="text-xs font-semibold text-green-700 uppercase tracking-wider mb-3">🌿 Farmer's Wisdom</p>
+            <blockquote className="text-gray-800 text-base sm:text-lg font-medium italic leading-relaxed mb-4">
+              "{[
+                'Annadata Sukhi Bhava — May the food provider always be happy.',
+                'The farmer is the only person in our economy who buys everything at retail, sells at wholesale.',
+                'जो किसान अपनी मिट्टी से प्यार करता है, वही असली देश का निर्माता है।',
+                'To forget how to dig the earth and tend the soil is to forget ourselves.',
+                'Agriculture is the foundation of civilization and any stable economy.',
+              ][new Date().getDate() % 5]}"
+            </blockquote>
+            <Link to="/community" className="text-sm font-semibold text-green-700 hover:underline">Share your wisdom in Community →</Link>
+          </div>
+
+          {/* Crop Calendar CTA */}
+          <div className="bg-gradient-to-br from-green-700 to-emerald-600 text-white rounded-2xl p-6 flex flex-col justify-between card-lift">
+            <div>
+              <p className="text-xs font-semibold text-green-200 uppercase tracking-wider mb-2">📅 New Feature</p>
+              <h3 className="text-xl font-bold mb-2">Crop Sowing Calendar</h3>
+              <p className="text-green-100 text-sm leading-relaxed">
+                Know exactly what to sow and harvest this month. Interactive calendar for 16 major crops across all seasons.
+              </p>
+            </div>
+            <Link to="/crop-calendar"
+              className="mt-4 inline-block px-5 py-2.5 bg-white text-green-800 font-bold rounded-xl hover:bg-yellow-300 transition-colors text-sm w-fit">
+              Open Calendar →
+            </Link>
+          </div>
         </div>
       </section>
 

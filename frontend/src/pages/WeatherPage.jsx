@@ -1,7 +1,8 @@
-
 // src/pages/WeatherPage.jsx
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
+import { useWeatherAlerts } from '../hooks/useWeatherAlerts';
+import WeatherAlertPopup from '../components/WeatherAlertPopup';
 
 const OPENWEATHER_API_KEY = 'bc61e3d71d9a8321abfc975b30edd08f';
 const OPENWEATHER_API_BASE_URL = 'https://api.openweathermap.org/data/2.5/';
@@ -12,6 +13,8 @@ export default function WeatherPage() {
   const [error, setError] = useState(null);
   const [location, setLocation] = useState('Greater Noida, Uttar Pradesh, India');
   const [inputLocation, setInputLocation] = useState(location);
+
+  const { popup, dismissPopup } = useWeatherAlerts();
 
   const fetchWeather = async (queryLocation) => {
     setLoading(true);
@@ -137,6 +140,7 @@ export default function WeatherPage() {
 
   return (
     <>
+      <WeatherAlertPopup popup={popup} onDismiss={dismissPopup} />
       <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg my-8">
         <h1 className="text-4xl font-bold text-blue-800 mb-8 text-center">Agricultural Weather Forecast</h1>
         <p className="text-lg text-gray-700 mb-6 text-center max-w-3xl mx-auto">

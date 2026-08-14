@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from '../services/api';
 
+const ROLE_LABELS = { FARMER: 'Farmer', RESEARCHER: 'Researcher / Scientist', MANDI_OWNER: 'Mandi Owner', LAB_OWNER: 'Lab Owner / Testing Center' };
+
 const Step = ({ n, label, active, done }) => (
   <div className="flex flex-col items-center gap-1 flex-1">
     <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300
@@ -26,15 +28,19 @@ const inputCls = "w-full px-4 py-3 border border-green-200 rounded-xl bg-white/8
 
 function SignupPage({ onSignup }) {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1); // 1 = details, 2 = verify email, 3 = done
+  const [step, setStep] = useState(1);
+  const [pendingApproval, setPendingApproval] = useState(false);
 
   const [formData, setFormData] = useState({
-    fullName: '', email: '', phone: '', city: '', state: '', password: '', role: 'FARMER'
+    fullName: '', email: '', phone: '', city: '', state: '', password: '', role: 'FARMER',
+    village: '', district: '', landHolding: '',
+    institution: '', specialization: '',
+    mandiName: '', mandiLocation: '',
+    labName: '', licenseNo: ''
   });
   const [showPass, setShowPass] = useState(false);
   const [otp, setOtp] = useState('');
   const [devOtp, setDevOtp] = useState('');
-  const [emailVerified, setEmailVerified] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', ok: false });
 
@@ -43,7 +49,7 @@ function SignupPage({ onSignup }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'email') { setEmailVerified(false); setOtp(''); setDevOtp(''); }
+    if (name === 'email') { setOtp(''); setDevOtp(''); }
     setFormData(p => ({ ...p, [name]: value }));
   };
 
@@ -70,32 +76,29 @@ function SignupPage({ onSignup }) {
     }
   };
 
-  // ── Step 2 → verify OTP ───────────────────────────────────────────────────────
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     clearMsg();
     if (otp.length !== 6) { showMsg('Enter the 6-digit OTP.'); return; }
     setLoading(true);
     try {
-      const res = await authAPI.verifyRegistrationOtp(formData.email, otp);
-      setEmailVerified(true);
-      showMsg(res.message || 'Email verified!', true);
-      // Immediately proceed to register
+      await authAPI.verifyRegistrationOtp(formData.email, otp);
       await handleRegister();
     } catch (err) {
       showMsg(err.response?.data?.message || 'Invalid OTP. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   const handleRegister = async () => {
     try {
       const res = await authAPI.register(formData);
-      showMsg('Account created! Redirecting…', true);
       setStep(3);
-      if (onSignup) onSignup(res.data.user);
-      setTimeout(() => navigate('/'), 1500);
+      if (res.data?.pendingApproval) {
+        setPendingApproval(true);
+      } else {
+        if (onSignup) onSignup(res.data.user);
+        setTimeout(() => navigate('/'), 1500);
+      }
     } catch (err) {
       showMsg(err.response?.data?.message || 'Registration failed. Please try again.');
     }
@@ -127,7 +130,7 @@ function SignupPage({ onSignup }) {
               </svg>
             </div>
             <h1 className="text-2xl font-extrabold text-green-900">Create Account</h1>
-            <p className="text-sm text-green-700/70 mt-1">Join Krishi Sahayak with secure email verification</p>
+            <p className="text-sm text-green-700/70 mt-1">Join Krishi Sahayak — accounts require admin approval</p>
           </div>
 
           {/* Steps */}
@@ -160,14 +163,13 @@ function SignupPage({ onSignup }) {
                     onChange={handleChange} disabled={loading} placeholder="+91 …"
                     className={inputCls} />
                 </Field>
-                <Field label="I am a" id="role">
+                <Field label="I am a *" id="role">
                   <select id="role" name="role" value={formData.role}
                     onChange={handleChange} disabled={loading}
                     className={inputCls}>
-                    <option value="FARMER">Farmer</option>
-                    <option value="RESEARCHER">Researcher</option>
-                    <option value="MANDI_OWNER">Mandi Owner</option>
-                    <option value="LAB_OWNER">Lab Owner</option>
+                    {Object.entries(ROLE_LABELS).map(([v, l]) => (
+                      <option key={v} value={v}>{l}</option>
+                    ))}
                   </select>
                 </Field>
               </div>
@@ -183,6 +185,43 @@ function SignupPage({ onSignup }) {
                     onChange={handleChange} disabled={loading} placeholder="Uttar Pradesh"
                     className={inputCls} />
                 </Field>
+              </div>
+
+              {/* Role-specific fields */}
+              {formData.role === 'FARMER' && (
+                <div className="rounded-xl border border-green-100 bg-green-50/50 p-4 space-y-3">
+                  <p className="text-xs font-semibold text-green-700 uppercase tracking-wider">Farmer Details</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Village" id="village"><input id="village" name="village" type="text" value={formData.village} onChange={handleChange} disabled={loading} placeholder="Village" className={inputCls} /></Field>
+                    <Field label="District" id="district"><input id="district" name="district" type="text" value={formData.district} onChange={handleChange} disabled={loading} placeholder="District" className={inputCls} /></Field>
+                  </div>
+                  <Field label="Land Holding (Acres)" id="landHolding"><input id="landHolding" name="landHolding" type="text" value={formData.landHolding} onChange={handleChange} disabled={loading} placeholder="e.g. 2.5" className={inputCls} /></Field>
+                </div>
+              )}
+              {formData.role === 'RESEARCHER' && (
+                <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-4 space-y-3">
+                  <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider">Researcher Details</p>
+                  <Field label="Institution / University *" id="institution"><input id="institution" name="institution" type="text" value={formData.institution} onChange={handleChange} disabled={loading} required placeholder="e.g. ICAR, IARI" className={inputCls} /></Field>
+                  <Field label="Specialization *" id="specialization"><input id="specialization" name="specialization" type="text" value={formData.specialization} onChange={handleChange} disabled={loading} required placeholder="e.g. Soil Science" className={inputCls} /></Field>
+                </div>
+              )}
+              {formData.role === 'MANDI_OWNER' && (
+                <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-4 space-y-3">
+                  <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider">Mandi Details</p>
+                  <Field label="Mandi Name *" id="mandiName"><input id="mandiName" name="mandiName" type="text" value={formData.mandiName} onChange={handleChange} disabled={loading} required placeholder="e.g. Azadpur Mandi" className={inputCls} /></Field>
+                  <Field label="Mandi Location *" id="mandiLocation"><input id="mandiLocation" name="mandiLocation" type="text" value={formData.mandiLocation} onChange={handleChange} disabled={loading} required placeholder="City / District" className={inputCls} /></Field>
+                </div>
+              )}
+              {formData.role === 'LAB_OWNER' && (
+                <div className="rounded-xl border border-purple-100 bg-purple-50/50 p-4 space-y-3">
+                  <p className="text-xs font-semibold text-purple-700 uppercase tracking-wider">Lab Details</p>
+                  <Field label="Lab Name *" id="labName"><input id="labName" name="labName" type="text" value={formData.labName} onChange={handleChange} disabled={loading} required placeholder="Lab / Testing Center Name" className={inputCls} /></Field>
+                  <Field label="License / Registration No. *" id="licenseNo"><input id="licenseNo" name="licenseNo" type="text" value={formData.licenseNo} onChange={handleChange} disabled={loading} required placeholder="License number" className={inputCls} /></Field>
+                </div>
+              )}
+
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+                ⚠️ All new registrations require <strong>admin approval</strong> before you can log in.
               </div>
 
               <Field label="Password * (min 6 chars)" id="password">
@@ -263,12 +302,22 @@ function SignupPage({ onSignup }) {
             </form>
           )}
 
-          {/* ── Step 3: success ──────────────────────────────────────────── */}
           {step === 3 && (
             <div className="text-center py-6 space-y-4">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 text-3xl mb-2">✓</div>
-              <h3 className="text-xl font-bold text-green-900">You're all set!</h3>
-              <p className="text-green-700/80 text-sm">Your account has been created. Redirecting to home…</p>
+              <h3 className="text-xl font-bold text-green-900">Registration Complete!</h3>
+              {pendingApproval ? (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-left space-y-2">
+                  <p className="font-semibold text-amber-800">⏳ Pending Admin Approval</p>
+                  <p className="text-sm text-amber-700">
+                    Your account as a <strong>{ROLE_LABELS[formData.role]}</strong> has been created and is under review.
+                    An administrator will verify your credentials. You can log in once approved.
+                  </p>
+                  <Link to="/login" className="inline-block mt-2 text-sm font-semibold text-green-700 hover:underline">← Back to Login</Link>
+                </div>
+              ) : (
+                <p className="text-green-700/80 text-sm">Your account has been created. Redirecting to home…</p>
+              )}
             </div>
           )}
 

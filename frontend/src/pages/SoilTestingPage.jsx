@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { soilQueryAPI } from '../services/api';
 
 const initialFormState = {
   name: '',
@@ -26,12 +27,11 @@ const SoilTestingForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Replace URL below with your backend endpoint if needed; here it's only a simulation.
-      // await fetch('/api/submit-query', { method: "POST", body: JSON.stringify(formData) });
-      setSubmissionStatus('Query submitted successfully! Our researchers will contact you soon.');
+      const result = await soilQueryAPI.submit(formData);
+      setSubmissionStatus(result.message);
       setFormData(initialFormState);
     } catch (err) {
-      setSubmissionStatus('Submission failed. Please try again.');
+      setSubmissionStatus(err.response?.data?.message || 'Submission failed. Please try again.');
     }
   };
 

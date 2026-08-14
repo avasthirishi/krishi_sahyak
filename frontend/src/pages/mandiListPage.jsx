@@ -309,52 +309,67 @@ const mandiData = [
 
 // Card component with image
 const MandiCard = ({ data }) => (
-  <div className="w-full md:w-1/2 lg:w-1/3 p-2">
-    <div className="bg-gray-100 p-4 rounded-lg shadow-md transition-shadow hover:shadow-xl">
-      <div className="w-full h-40 flex items-center justify-center mb-4 overflow-hidden rounded-lg bg-white">
-        <img
-          src={data.image || "/assets/crops/default.jpg"}
-          alt={data.productName}
-          className="object-contain h-full max-w-full transition-transform duration-300 hover:scale-105"
-        />
+  <div className="glass-card card-lift overflow-hidden animate-fade-in">
+    <div className="h-44 overflow-hidden bg-gray-50">
+      <img
+        src={data.image || 'https://placehold.co/400x200/cccccc/000000?text=Crop'}
+        alt={data.productName}
+        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+        onError={e => { e.target.onerror = null; e.target.src = 'https://placehold.co/400x200/cccccc/000000?text=Crop'; }}
+      />
+    </div>
+    <div className="p-4">
+      <h5 className="font-bold text-gray-800 text-base mb-3 leading-tight">{data.productName}</h5>
+      <div className="space-y-1.5 text-sm text-gray-600 mb-4">
+        <p><span className="font-semibold text-gray-700">📍</span> {data.cityState}</p>
+        <p><span className="font-semibold text-gray-700">🏪 Market:</span> {data.market}</p>
+        <p><span className="font-semibold text-gray-700">📅 Date:</span> {data.priceDate}</p>
       </div>
-      <h5 className="font-bold text-lg mb-2">{data.productName}</h5>
-      <div className="flex flex-wrap justify-between">
-        <div className="w-full sm:w-1/2 mb-4 sm:mb-0">
-          <p className="text-sm my-0 font-bold text-gray-500">City, State</p>
-          <h6 className="font-bold text-base">{data.cityState}</h6>
-          <p className="text-sm my-0 font-bold text-gray-500 mt-2">Market :</p>
-          <h6 className="font-bold text-base">{data.market}</h6>
-          <p className="text-sm my-0 font-bold text-gray-500 mt-2">Price date :</p>
-          <h6 className="font-bold text-base">{data.priceDate}</h6>
-        </div>
-        <div className="w-full sm:w-1/2 flex flex-col items-end justify-end">
-          <div className="flex justify-end my-2">
-            <button className="px-3 py-1 bg-white rounded-lg shadow-sm text-sm font-medium">
-              <span className="font-bold text-gray-700">Min Price :</span> {data.minPrice}
-            </button>
-          </div>
-          <div className="flex justify-end">
-            <button className="rounded-lg text-white px-3 py-1 bg-green-500 hover:bg-green-600 transition-colors text-sm font-medium shadow-md">
-              <span className="font-bold">Max Price :</span> {data.maxPrice}
-            </button>
-          </div>
-        </div>
+      <div className="flex gap-2">
+        <span className="flex-1 text-center px-2 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
+          Min: {data.minPrice.replace(' Rs/Quintal', '')} ₹
+        </span>
+        <span className="flex-1 text-center px-2 py-1.5 bg-green-600 text-white rounded-lg text-xs font-semibold">
+          Max: {data.maxPrice.replace(' Rs/Quintal', '')} ₹
+        </span>
       </div>
     </div>
   </div>
 );
 
 const MandiListPage = () => {
+  const [search, setSearch] = React.useState('');
+  const filtered = mandiData.filter(d =>
+    d.productName.toLowerCase().includes(search.toLowerCase()) ||
+    d.cityState.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className="bg-gray-50 min-h-screen p-4 sm:p-8">
-      <div className="container mx-auto">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Live Mandi Prices in Patna, Bihar</h1>
-        <div className="flex flex-wrap -mx-2">
-          {mandiData.map(item => (
-            <MandiCard key={item.key} data={item} />
-          ))}
-        </div>
+    <div className="page-container">
+      <div className="text-center mb-8 animate-fade-in">
+        <h1 className="section-heading text-green-900 mb-2">🏪 Live Mandi Prices</h1>
+        <p className="text-gray-600">Latest commodity prices across major mandis in India</p>
+      </div>
+
+      {/* Search */}
+      <div className="mb-6 max-w-md mx-auto">
+        <input
+          type="text"
+          placeholder="Search by crop or city…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="w-full px-4 py-3 border border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 bg-white text-sm"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {filtered.map(item => <MandiCard key={item.key} data={item} />)}
+        {filtered.length === 0 && (
+          <div className="col-span-full text-center py-12 text-gray-500">
+            <p className="text-4xl mb-3">🔍</p>
+            <p>No results for "{search}"</p>
+          </div>
+        )}
       </div>
     </div>
   );

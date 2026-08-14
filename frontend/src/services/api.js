@@ -226,5 +226,12 @@ export const resourceAPI = {
   }
 };
 
+export const soilQueryAPI = {
+  submit: async (formData) => {
+    const response = await api.post('/soil-queries', formData);
+    return response.data;
+  }
+};
+
 // Export default api instance
 export default api;

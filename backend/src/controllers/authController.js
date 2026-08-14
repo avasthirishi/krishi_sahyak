@@ -375,29 +375,60 @@ export const register = async (req, res) => {
     // Set default role
     const userRole = role && Object.values(ROLES).includes(role) ? role : ROLES.FARMER;
 
+    // Numeric role ID mapping
+    const ROLE_ID_MAP = { FARMER: 1, RESEARCHER: 2, MANDI_OWNER: 3, LAB_OWNER: 4, CONTENT_MANAGER: 5, SUPER_ADMIN: 6 };
+
+    // SUPER_ADMIN is auto-approved; all other roles need admin approval
+    const autoApproved = userRole === ROLES.SUPER_ADMIN;
+
+    // Build role-specific profile fields
+    const { institution, specialization, mandiName, mandiLocation, labName, licenseNo, village, district, landHolding } = req.body;
+
     // Create user with profile
     const user = await prisma.user.create({
       data: {
         email: normalizedEmail,
         passwordHash,
         role: userRole,
+        roleId: ROLE_ID_MAP[userRole] ?? 1,
+        isApproved: autoApproved,
         profile: {
           create: {
             fullName,
             phone: phone || null,
             city: city || null,
-            state: state || null
+            state: state || null,
+            institution: institution || null,
+            specialization: specialization || null,
+            mandiName: mandiName || null,
+            mandiLocation: mandiLocation || null,
+            labName: labName || null,
+            licenseNo: licenseNo || null,
+            village: village || null,
+            district: district || null,
+            landHolding: landHolding || null
           }
         }
       },
-      include: {
-        profile: true
-      }
+      include: { profile: true }
     });
+
+    consumeEmailVerification(normalizedEmail);
+
+    // Non-admin users are pending approval — don't issue tokens yet
+    if (!autoApproved) {
+      return res.status(HTTP_STATUS.CREATED).json({
+        success: true,
+        message: 'Registration successful! Your account is pending admin approval. You will be notified once approved.',
+        data: {
+          pendingApproval: true,
+          user: { id: user.id, email: user.email, role: user.role, roleId: user.roleId }
+        }
+      });
+    }
 
     // Generate tokens
     const { accessToken, refreshToken } = generateTokens(user.id, user.email, user.role);
-    consumeEmailVerification(normalizedEmail);
 
     // Return success response
     res.status(HTTP_STATUS.CREATED).json({
@@ -408,6 +439,7 @@ export const register = async (req, res) => {
           id: user.id,
           email: user.email,
           role: user.role,
+          roleId: user.roleId,
           profile: user.profile
         },
         accessToken,
@@ -462,6 +494,14 @@ export const login = async (req, res) => {
       });
     }
 
+    // Block login if not approved yet
+    if (!user.isApproved) {
+      return res.status(HTTP_STATUS.FORBIDDEN).json({
+        success: false,
+        message: 'Your account is pending admin approval. Please wait for an administrator to review your registration.'
+      });
+    }
+
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
@@ -475,10 +515,10 @@ export const login = async (req, res) => {
     // Generate tokens
     const { accessToken, refreshToken } = generateTokens(user.id, user.email, user.role);
 
-    // Update last login
+    // Update last active timestamp
     await prisma.user.update({
       where: { id: user.id },
-      data: { updatedAt: new Date() }
+      data: { lastActiveAt: new Date() }
     });
 
     // Return success response
@@ -490,6 +530,7 @@ export const login = async (req, res) => {
           id: user.id,
           email: user.email,
           role: user.role,
+          roleId: user.roleId,
           profile: user.profile
         },
         accessToken,
